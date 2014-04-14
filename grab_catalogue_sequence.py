@@ -19,6 +19,7 @@ import argparse
 import sys
 import os
 import csv
+import bisect
 
 
 __author__ = "Amine Ghozlane"
@@ -100,6 +101,29 @@ def extract_interest_elements(list_sequences_file):
     return list_sequences
 
 
+# def is_selected(header, list_sequences):
+#     """
+#     """
+#     for element in list_sequences:
+#         if element in header:
+#             return element
+#     return None
+
+
+def get_element(name, input_list):
+    """Search name in input list
+      Arguments:
+        input_list: List
+        name: Search criteria
+    """
+    # Searching the node with its name
+    i = bisect.bisect_left(input_list, name)
+    # Object has been found
+    if(i != len(input_list) and input_list[i] == name):
+        return input_list[i]
+    return None
+
+
 def extract_catalogue_sequence(list_sequences, catalogue_file):
     """
     """
@@ -110,7 +134,7 @@ def extract_catalogue_sequence(list_sequences, catalogue_file):
             for line in catalogue:
                 if line[0] == ">":
                     grab_sequence = False
-                    selection = is_selected(line[0], list_sequences):
+                    selection = get_element(line[0], list_sequences):
                     if selection:
                         interest_sequence[selection] = ""
                         grab_sequence = True
@@ -149,12 +173,16 @@ def main():
     # Get the arguments
     args = getArguments()
     # Get List of sequence of interest
+    print("Get List of sequence of interest ...")
     list_sequences = extract_interest_elements(args.list_sequences_file)
     # Extract catalogue sequence
+    print("Extract sequences from the catalogue...")
     interest_sequence = extract_catalogue_sequence(list_sequences,
                                                    catalogue_file)
     # Write sequences
+    print("Write sequences to {0}".format(args.output_file))
     write_interest_sequence(interest_sequence, args.output_file)
+    print("Done.")
 
 
 if __name__ == '__main__':
