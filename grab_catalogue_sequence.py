@@ -134,7 +134,7 @@ def extract_catalogue_sequence(list_sequences, catalogue_file):
             for line in catalogue:
                 if line[0] == ">":
                     grab_sequence = False
-                    selection = get_element(line[0], list_sequences):
+                    selection = get_element(line[0], list_sequences)
                     if selection:
                         interest_sequence[selection] = ""
                         grab_sequence = True
