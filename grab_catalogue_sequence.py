@@ -177,7 +177,7 @@ def main():
     # Get the arguments
     args = getArguments()
     # Get List of sequence of interest
-    print("Get List of sequence of interest ...")
+    print("Load the list of sequence of interest ...")
     list_sequences = extract_interest_elements(args.list_sequences_file)
     # Extract catalogue sequence
     print("Extract sequences from the catalogue...")
