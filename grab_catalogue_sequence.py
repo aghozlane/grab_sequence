@@ -20,7 +20,7 @@ import sys
 import os
 import csv
 import bisect
-
+import textwrap
 
 __author__ = "Amine Ghozlane"
 __copyright__ = "Copyright 2014, INRA"
@@ -87,8 +87,8 @@ def extract_interest_elements(list_sequences_file):
     """
     list_sequences = []
     try:
-        with open(list_sequences_file, "rt") as list_sequences:
-            list_sequences_reader = csv.reader(list_sequences)
+        with open(list_sequences_file, "rt") as list_seq:
+            list_sequences_reader = csv.reader(list_seq, delimiter="\t")
             for line in list_sequences_reader:
                  list_sequences.append(line[0])
             assert(list_sequences > 0)
@@ -134,7 +134,7 @@ def extract_catalogue_sequence(list_sequences, catalogue_file):
             for line in catalogue:
                 if line[0] == ">":
                     grab_sequence = False
-                    selection = get_element(line[0], list_sequences)
+		    selection = get_element(line[1:].split(" ")[0], list_sequences)
                     if selection:
                         interest_sequence[selection] = ""
                         grab_sequence = True
@@ -158,7 +158,7 @@ def write_interest_sequence(interest_sequence, output_file):
                 output.write(">{1}{0}{2}{0}".format(
                                 os.linesep, key,
                                 "{0}".format(os.linesep).join(
-                                    textwrap.wrap(sequence_data[seq], 80))))
+                                    textwrap.wrap(interest_sequence[key], 80))))
     except IOError:
         sys.exit("Error cannot open {0}".format(output_file))
 
@@ -178,8 +178,10 @@ def main():
     # Extract catalogue sequence
     print("Extract sequences from the catalogue...")
     interest_sequence = extract_catalogue_sequence(list_sequences,
-                                                   catalogue_file)
+                                                   args.catalogue_file)
     # Write sequences
+    if not args.output_file:
+       args.output_file = "extracted_sequence.fasta"
     print("Write sequences to {0}".format(args.output_file))
     write_interest_sequence(interest_sequence, args.output_file)
     print("Done.")
