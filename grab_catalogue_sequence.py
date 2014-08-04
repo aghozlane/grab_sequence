@@ -75,8 +75,8 @@ def getArguments():
     parser.add_argument('-d', dest='catalogue_file', type=isfile,
                         required=True,
                         help='Database query.')
-    parser.add_argument('-o', dest='output_file', type=isfile,
-                        help='Target PDB file or directory.')
+    parser.add_argument('-o', dest='output_file', type=str,
+                        help='Output file.')
     parser.add_argument('-r', dest='results', type=isdir,
                         help='Path to result directory.')
     return parser.parse_args()
