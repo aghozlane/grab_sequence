@@ -105,7 +105,7 @@ def get_sequence(list_query, target_file, not_in_database):
     """
     """
     result = {}
-    known = False
+    known = None
     try:
         with open(target_file, "rt") as target:
             for line in target:
@@ -114,7 +114,7 @@ def get_sequence(list_query, target_file, not_in_database):
                 if line[0] == ">":
                     if len(list_query) == 0:
                         break
-                    known = False
+                    known = None
                     title = line[1:].replace("\n", "").replace("\r", "")
                     if " " in title:
                         title = title.split(" ")[0]
@@ -126,7 +126,7 @@ def get_sequence(list_query, target_file, not_in_database):
                         known = title
                         result[known] = ""
                     elif known and not_in_database:
-                        know = None
+                        known = None
             if not not_in_database:
                 assert(len(list_query) == 0)
     except IOError:
