@@ -125,6 +125,8 @@ def get_sequence(list_query, target_file, not_in_database):
                     elif not known and not_in_database:
                         known = title
                         result[known] = ""
+                    elif known and not_in_database:
+                        know = None
             if not not_in_database:
                 assert(len(list_query) == 0)
     except IOError:
