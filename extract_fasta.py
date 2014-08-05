@@ -95,7 +95,6 @@ def check_reference(title, list_query):
     """
     """
     for q in list_query:
-        print(q)
         if q in title:
             return q
     return None
