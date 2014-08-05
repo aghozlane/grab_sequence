@@ -111,7 +111,9 @@ def get_sequence(list_query, target_file, not_in_database):
                     if len(list_query) == 0:
                         break
                     known = False
-                    title = line[1:].strip().replace("\n", "")
+                    title = line[1:].replace("\n", "").replace("\r", "")
+                    if " " in title:
+                        title = title.split(" ")[0]
                     known = check_reference(title, list_query)
                     if known and not not_in_database:
                         list_query.pop(list_query.index(known))
