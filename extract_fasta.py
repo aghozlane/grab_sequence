@@ -77,7 +77,7 @@ def getArguments():
 def get_query(query_file):
     """
     """
-    regex_query = re.compile("^([\w.]+)\s")
+    regex_query = re.compile("^(\S+)\s")
     query_list = []
     try:
         with open(query_file, "rt") as query:
@@ -95,6 +95,7 @@ def check_reference(title, list_query):
     """
     """
     for q in list_query:
+        print(q)
         if q in title:
             return q
     return None
