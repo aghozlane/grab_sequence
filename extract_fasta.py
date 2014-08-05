@@ -26,7 +26,6 @@ def isfile(path):
       Arguments:
           path: Path to the file
     """
-    # from Jonathan Barnoud
     if not os.path.isfile(path):
         if os.path.isdir(path):
             msg = "{0} is a directory".format(path)
@@ -110,7 +109,7 @@ def get_sequence(list_query, target_file, not_in_database):
         with open(target_file, "rt") as target:
             for line in target:
                 if known and line[0] != ">":
-                    result[known] += line[0:].strip().replace("\n", "")
+                    result[known] += line[0:].strip().replace("\n", "").replace("\r", "")
                 if line[0] == ">":
                     if len(list_query) == 0:
                         break
@@ -125,7 +124,8 @@ def get_sequence(list_query, target_file, not_in_database):
                     elif not known and not_in_database:
                         known = title
                         result[known] = ""
-            assert(len(list_query) == 0)
+            if not not_in_database:
+                assert(len(list_query) == 0)
     except IOError:
         sys.exit("Error : cannot open {0}".format(target_file))
     except AssertionError:
@@ -143,9 +143,9 @@ def write_sequence(results, sequence_data, output_file, verbose):
     try:
         with open(output_file, "wt") as output:
             for seq in sequence_data:
-                output.write(">{0}\n".format(seq))
-                output.write("{0}\n".format("{0}".format(os.linesep).join(
-                    textwrap.wrap(sequence_data[seq], 80))))
+                output.write(">{1}{0}{2}{0}".format(os.linesep, seq,
+                    "{0}".format(os.linesep).join(
+                        textwrap.wrap(sequence_data[seq], 80))))
                 if verbose:
                     print("write : {0}, length : {1}".format(seq,
                         len(sequence_data[seq])))
