@@ -58,11 +58,14 @@ def getArguments():
     parser = argparse.ArgumentParser(description=__doc__, usage=
                                      "{0} -h".format(sys.argv[0]))
     parser.add_argument('-q', dest='query_file', type=isfile, required=True,
-                        help='Path to the query file.')
+                        help='Path to the query file (blast).')
     parser.add_argument('-t', dest='target_file', type=isfile, required=True,
                         help='Path to the database file.')
+    parser.add_argument('-n', dest='not_in_database', action='store_true',
+                        help='Select instead elements which are not in the'
+                        ' list.')
     parser.add_argument('-r', dest='results', type=isdir,
-			default=os.curdir + os.sep,
+                        default=os.curdir + os.sep,
                         help='Path to result directory.')
     args = parser.parse_args()
     return args
@@ -74,14 +77,14 @@ def get_query(query_file):
     regex_query = re.compile("^([\w.]+)\s")
     query_list = []
     try:
-	with open(query_file, "rt") as query:
-	    for line in query:
-		if line[0] != "#":
-		    match_query = regex_query.match(line)
-		    if match_query:
-			query_list += [match_query.group(1)]
+        with open(query_file, "rt") as query:
+            for line in query:
+                if line[0] != "#":
+                    match_query = regex_query.match(line)
+                    if match_query:
+                        query_list += [match_query.group(1)]
     except IOError:
-	sys.exit("Error cannot open {0}".format(query_file))
+        sys.exit("Error cannot open {0}".format(query_file))
     return query_list
 
 
@@ -89,37 +92,40 @@ def check_reference(title, list_query):
     """
     """
     for q in list_query:
-	if q in title:
-	    return q
+        if q in title:
+            return q
     return None
 
 
-def get_sequence(list_query, target_file):
+def get_sequence(list_query, target_file, not_in_database):
     """
     """
     result = {}
     known = False
     try:
-	with open(target_file, "rt") as target:
-	    for line in target:
-		if known and line[0] != ">":
-		    result[known] += line[0:].strip().replace("\n", "")
-		if line[0] == ">":
-		    if len(list_query) == 0:
-			break
-		    known = False
-		    title = line[1:].strip().replace("\n", "")
-		    known = check_reference(title, list_query)
-		    if known:
-			list_query.pop(list_query.index(known))
-			result[known] = ""
-	assert(len(list_query) == 0)
+        with open(target_file, "rt") as target:
+            for line in target:
+                if known and line[0] != ">":
+                    result[known] += line[0:].strip().replace("\n", "")
+                if line[0] == ">":
+                    if len(list_query) == 0:
+                        break
+                    known = False
+                    title = line[1:].strip().replace("\n", "")
+                    known = check_reference(title, list_query)
+                    if known and not not_in_database:
+                        list_query.pop(list_query.index(known))
+                        result[known] = ""
+                    elif not known and not_in_database:
+                        known = title
+                        result[known] = ""
+            assert(len(list_query) == 0)
     except IOError:
-	sys.exit("Error : cannot open {0}".format(target_file))
+        sys.exit("Error : cannot open {0}".format(target_file))
     except AssertionError:
-	print("The program have not find every query sequence, "
-	      "check the following elements :", file=sys.stderr)
-	print(list_query, file=sys.stderr)
+        print("The program have not find every query sequence, "
+            "check the following elements :", file=sys.stderr)
+        print(list_query, file=sys.stderr)
     return result
 
 
@@ -128,15 +134,15 @@ def write_sequence(results, sequence_data):
     """
     output_file = results + os.sep + "extracted_sequence.fasta"
     try:
-	with open(output_file, "wt") as output:
-	    for seq in sequence_data:
-		output.write(">{0}\n".format(seq))
-		output.write("{0}\n".format("{0}".format(os.linesep).join(
-		    textwrap.wrap(sequence_data[seq], 80))))
-		print("write : {0}, length : {1}".format(seq, 
-					   len(sequence_data[seq])))
+        with open(output_file, "wt") as output:
+            for seq in sequence_data:
+                output.write(">{0}\n".format(seq))
+                output.write("{0}\n".format("{0}".format(os.linesep).join(
+                    textwrap.wrap(sequence_data[seq], 80))))
+                print("write : {0}, length : {1}".format(seq,
+                    len(sequence_data[seq])))
     except IOError:
-	sys.exit("Error : cannot open {0}")
+        sys.exit("Error : cannot open {0}".format(output_file))
 
 
 def main():
@@ -147,10 +153,11 @@ def main():
     # Load query elements
     list_query = get_query(args.query_file)
     # Grab query sequence in the database
-    sequence_data = get_sequence(list_query, args.target_file)
+    sequence_data = get_sequence(list_query, args.target_file,
+                                 args.not_in_database)
     # Write the new fasta file
     write_sequence(args.results, sequence_data)
-	
+
 
 if __name__ == '__main__':
     main()
