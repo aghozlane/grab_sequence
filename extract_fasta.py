@@ -64,6 +64,8 @@ def getArguments():
     parser.add_argument('-n', dest='not_in_database', action='store_true',
                         help='Select instead elements which are not in the'
                         ' list.')
+    parser.add_argument('-o', dest='output_file', type=str,
+                        help='Output file.')
     parser.add_argument('-r', dest='results', type=isdir,
                         default=os.curdir + os.sep,
                         help='Path to result directory.')
@@ -131,10 +133,11 @@ def get_sequence(list_query, target_file, not_in_database):
     return result
 
 
-def write_sequence(results, sequence_data):
+def write_sequence(results, sequence_data, output_file):
     """
     """
-    output_file = results + os.sep + "extracted_sequence.fasta"
+    if not output_file:
+        output_file = results + os.sep + "extracted_sequence.fasta"
     try:
         with open(output_file, "wt") as output:
             for seq in sequence_data:
@@ -158,7 +161,7 @@ def main():
     sequence_data = get_sequence(list_query, args.target_file,
                                  args.not_in_database)
     # Write the new fasta file
-    write_sequence(args.results, sequence_data)
+    write_sequence(args.results, sequence_data, args.output_file)
 
 
 if __name__ == '__main__':
