@@ -64,6 +64,8 @@ def getArguments():
     parser.add_argument('-n', dest='not_in_database', action='store_true',
                         help='Select instead elements which are not in the'
                         ' list.')
+    parser.add_argument('-v', dest='verbose', action='store_true',
+                        help='Print operation details.')
     parser.add_argument('-o', dest='output_file', type=str,
                         help='Output file.')
     parser.add_argument('-r', dest='results', type=isdir,
@@ -133,7 +135,7 @@ def get_sequence(list_query, target_file, not_in_database):
     return result
 
 
-def write_sequence(results, sequence_data, output_file):
+def write_sequence(results, sequence_data, output_file, verbose):
     """
     """
     if not output_file:
@@ -144,8 +146,9 @@ def write_sequence(results, sequence_data, output_file):
                 output.write(">{0}\n".format(seq))
                 output.write("{0}\n".format("{0}".format(os.linesep).join(
                     textwrap.wrap(sequence_data[seq], 80))))
-                print("write : {0}, length : {1}".format(seq,
-                    len(sequence_data[seq])))
+                if verbose:
+                    print("write : {0}, length : {1}".format(seq,
+                        len(sequence_data[seq])))
     except IOError:
         sys.exit("Error : cannot open {0}".format(output_file))
 
@@ -156,12 +159,16 @@ def main():
     # Load the arguments
     args = getArguments()
     # Load query elements
+    print("Load query list")
     list_query = get_query(args.query_file)
     # Grab query sequence in the database
+    print("Load database sequence")
     sequence_data = get_sequence(list_query, args.target_file,
                                  args.not_in_database)
     # Write the new fasta file
-    write_sequence(args.results, sequence_data, args.output_file)
+    print("Write the new fasta")
+    write_sequence(args.results, sequence_data, args.output_file, args.verbose)
+    print("Done")
 
 
 if __name__ == '__main__':
