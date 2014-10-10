@@ -131,7 +131,7 @@ def extract_catalogue_sequence(list_sequences, catalogue_file, not_in_database):
     """
     grab_sequence = False
     interest_sequence = {}
-    title = éé
+    title = ""
     try:
         with open(catalogue_file, "rt") as catalogue:
             for line in catalogue:
