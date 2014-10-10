@@ -131,7 +131,7 @@ def extract_catalogue_sequence(list_sequences, catalogue_file, not_in_database):
     """
     grab_sequence = False
     interest_sequence = {}
-    title 
+    title = éé
     try:
         with open(catalogue_file, "rt") as catalogue:
             for line in catalogue:
@@ -147,7 +147,7 @@ def extract_catalogue_sequence(list_sequences, catalogue_file, not_in_database):
                     elif not selection and not_in_database:
                         interest_sequence[title] = ""
                         grab_sequence = True
-                elif grab_sequence and len(line):
+                elif grab_sequence and len(line) > 0:
                     interest_sequence[title] += line.replace("\n", "").replace("\r", "")
             assert(len(interest_sequence) > 0)
     except IOError:
