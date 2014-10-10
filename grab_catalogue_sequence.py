@@ -122,8 +122,8 @@ def get_element(name, input_list):
     i = bisect.bisect_left(input_list, name)
     # Object has been found
     if(i != len(input_list) and input_list[i] == name):
-        return input_list[i]
-    return None
+        return True #input_list[i]
+    return False #None
 
 
 def extract_catalogue_sequence(list_sequences, catalogue_file, not_in_database):
@@ -131,6 +131,7 @@ def extract_catalogue_sequence(list_sequences, catalogue_file, not_in_database):
     """
     grab_sequence = False
     interest_sequence = {}
+    title 
     try:
         with open(catalogue_file, "rt") as catalogue:
             for line in catalogue:
@@ -141,13 +142,13 @@ def extract_catalogue_sequence(list_sequences, catalogue_file, not_in_database):
                         title = title.split(" ")[0]
                     selection = get_element(title, list_sequences)
                     if selection and not not_in_database:
-                        interest_sequence[selection] = ""
+                        interest_sequence[title] = ""
                         grab_sequence = True
                     elif not selection and not_in_database:
-                        interest_sequence[selection] = ""
+                        interest_sequence[title] = ""
                         grab_sequence = True
                 elif grab_sequence and len(line):
-                    interest_sequence[selection] += line.replace("\n", "").replace("\r", "")
+                    interest_sequence[title] += line.replace("\n", "").replace("\r", "")
             assert(len(interest_sequence) > 0)
     except IOError:
         sys.exit("Error cannot the file : {0}".format(catalogue_file))
