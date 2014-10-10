@@ -73,8 +73,10 @@ def getArguments():
                         required=True,
                         help='List of sequence to extract.')
     parser.add_argument('-d', dest='catalogue_file', type=isfile,
-                        required=True,
-                        help='Database query.')
+                        required=True, help='Database query.')
+    parser.add_argument('-n', dest='not_in_database', action='store_true',
+                        help='Select instead elements which are not in the'
+                        ' list.')
     parser.add_argument('-o', dest='output_file', type=str,
                         help='Output file.')
     parser.add_argument('-r', dest='results', type=isdir,
@@ -124,7 +126,7 @@ def get_element(name, input_list):
     return None
 
 
-def extract_catalogue_sequence(list_sequences, catalogue_file):
+def extract_catalogue_sequence(list_sequences, catalogue_file, not_in_database):
     """
     """
     grab_sequence = False
@@ -136,10 +138,12 @@ def extract_catalogue_sequence(list_sequences, catalogue_file):
                     grab_sequence = False
                     title = line[1:].replace("\n", "").replace("\r", "")
                     if " " in title:
-                        selection = get_element(title.split(" ")[0], list_sequences)
-                    else:
-                        selection = get_element(title, list_sequences)
-                    if selection:
+                        title = title.split(" ")[0]
+                    selection = get_element(title, list_sequences)
+                    if selection and not not_in_database:
+                        interest_sequence[selection] = ""
+                        grab_sequence = True
+                    elif not selection and not_in_database:
                         interest_sequence[selection] = ""
                         grab_sequence = True
                 elif grab_sequence and len(line):
@@ -182,7 +186,8 @@ def main():
     # Extract catalogue sequence
     print("Extract sequences from the catalogue...")
     interest_sequence = extract_catalogue_sequence(list_sequences,
-                                                   args.catalogue_file)
+                                                   args.catalogue_file,
+                                                   args.not_in_database)
     # Write sequences
     if not args.output_file:
        args.output_file = "extracted_sequence.fasta"
