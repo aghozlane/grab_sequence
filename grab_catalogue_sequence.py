@@ -158,6 +158,11 @@ def extract_catalogue_sequence(list_sequences, catalogue_file, not_in_database):
     return interest_sequence
 
 
+def fill(text, width=80):
+    """Split text"""
+    return os.linesep.join(text[i:i+width] for i in xrange(0, len(text), width))
+
+
 def write_interest_sequence(interest_sequence, output_file):
     """
     """
@@ -165,9 +170,7 @@ def write_interest_sequence(interest_sequence, output_file):
         with open(output_file, "wt") as output:
             for key in interest_sequence:
                 output.write(">{1}{0}{2}{0}".format(
-                                os.linesep, key,
-                                "{0}".format(os.linesep).join(
-                                    textwrap.wrap(interest_sequence[key], 80))))
+                                os.linesep, key, fill(interest_sequence[key])))
     except IOError:
         sys.exit("Error cannot open {0}".format(output_file))
 

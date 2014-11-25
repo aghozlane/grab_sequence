@@ -13,7 +13,7 @@
 
 """Find extract homologous proteins in a multifasta."""
 
-from __future__ import print_function 
+from __future__ import print_function
 import argparse
 import os
 import sys
@@ -137,6 +137,11 @@ def get_sequence(list_query, target_file, not_in_database):
     return result
 
 
+def fill(text, width=80):
+    """Split text"""
+    return os.linesep.join(text[i:i+width] for i in xrange(0, len(text), width))
+
+
 def write_sequence(results, sequence_data, output_file, verbose):
     """
     """
@@ -146,8 +151,7 @@ def write_sequence(results, sequence_data, output_file, verbose):
         with open(output_file, "wt") as output:
             for seq in sequence_data:
                 output.write(">{1}{0}{2}{0}".format(os.linesep, seq,
-                    "{0}".format(os.linesep).join(
-                        textwrap.wrap(sequence_data[seq], 80))))
+                                                    fill(sequence_data[seq])))
                 if verbose:
                     print("write : {0}, length : {1}".format(seq,
                         len(sequence_data[seq])))
