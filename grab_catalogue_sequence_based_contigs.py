@@ -192,11 +192,13 @@ def main():
     # Get List of sequence of interest
     print("Load the list of sequence of interest ...")
     list_sequences = extract_interest_elements(args.list_sequences_file)
+    print("{0} contigs to search".format(len(list_sequences)))
     # Extract catalogue sequence
     print("Extract sequences from the catalogue...")
     interest_sequence = extract_catalogue_sequence(list_sequences,
                                                    args.catalogue_file,
                                                    args.not_in_database)
+    print("{0} sequences in the contig".format(len(interest_sequence)))
     # Write sequences
     if not args.output_file:
        args.output_file = "extracted_sequence.fasta"
